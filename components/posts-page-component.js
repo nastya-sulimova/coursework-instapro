@@ -23,6 +23,8 @@ export function renderPostsPageComponent({ appEl }) {
     //         locale: ru    
     //     });
 
+
+    // Нравится: <strong>${post.likes[0].name || `Никому`}
     return `
       <li class="post">
         <div class="post-header" data-user-id=${post.id}>
@@ -37,7 +39,7 @@ export function renderPostsPageComponent({ appEl }) {
             <img src="./assets/images/like-not-active.svg">
           </button>
           <p class="post-likes-text">
-            Нравится: <strong>${post.likes[0].name || `Никому`}
+            Нравится: <strong>${`Никому`}
                 ${post.likes.length>1? `и еще ${post.likes.length-1}` : ''} </strong>
           </p>
         </div>

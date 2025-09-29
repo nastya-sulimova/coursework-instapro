@@ -111,8 +111,29 @@ const renderApp = () => {
       appEl,
       onAddPostClick({ description, imageUrl }) {
         // @TODO: реализовать добавление поста в API
-        console.log("Добавляю пост...", { description, imageUrl });
-        goToPage(POSTS_PAGE);
+        const personalKey = "nastya-sulimova";
+        const baseHost = "https://wedev-api.sky.pro";
+        const postsHost = `${baseHost}/api/v1/${personalKey}/instapro`;
+
+        return fetch(postsHost, {
+          method: "POST",
+          headers: {
+            // "Content-Type": "application/json", 
+            Authorization: `Bearer ${user.token}`, 
+          },
+          body: JSON.stringify({
+            description: description,
+            imageUrl: imageUrl,
+          })
+
+        }).then((response) => {
+          console.log("Добавляю пост...", { description, imageUrl });
+          goToPage(POSTS_PAGE);
+
+          return response.json();
+        });
+        // console.log("Добавляю пост...", { description, imageUrl });
+        // goToPage(POSTS_PAGE);
       },
     });
   }
