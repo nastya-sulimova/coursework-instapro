@@ -13,9 +13,16 @@ export function renderPostsPageComponent({ appEl, userName }) {
    * можно использовать https://date-fns.org/v2.29.3/docs/formatDistanceToNow
    */
 
-  const pageTitle = userName 
-    ? `Посты пользователя ${userName}` 
-    : "Все посты";
+const userData = posts.length > 0 ? posts[0].user : null;
+
+const postsUserHeader = userName && userData
+  ? `
+    <div class="posts-user-header">
+      <img src="${userData.imageUrl}" class="posts-user-header__user-image" alt="фото профиля пользователя">
+      <p class="posts-user-header__user-name">${userData.name}</p>
+    </div>
+  `
+  : "";
 
   const appHtml = posts.map((post, index) => {
     // const postDate = new Date(post.createdAt);
@@ -28,10 +35,14 @@ export function renderPostsPageComponent({ appEl, userName }) {
 
     return `
       <li class="post">
-        <div class="post-header" data-user-id="${post.user.id}">
-          <img src="${post.user.imageUrl}" class="post-header__user-image" alt="фото профиля пользователя">
-          <p class="post-header__user-name">${post.user.name}</p>
-        </div>
+
+        ${!userName ? `
+          <div class="post-header" data-user-id="${post.user.id}">
+            <img src="${post.user.imageUrl}" class="post-header__user-image" alt="фото профиля пользователя">
+            <p class="post-header__user-name">${post.user.name}</p>
+          </div>
+        ` : ''}
+        
         <div class="post-image-container">
           <img src="${post.imageUrl}" class="post-image" alt="фото поста">
         </div>
@@ -59,7 +70,7 @@ export function renderPostsPageComponent({ appEl, userName }) {
   appEl.innerHTML = `
     <div class="page-container">
       <div class="header-container"></div>
-      <h2 class="page-title">${pageTitle}</h2>
+      ${postsUserHeader}
       <ul class="posts">${appHtml}</ul>
     </div>
   `;
