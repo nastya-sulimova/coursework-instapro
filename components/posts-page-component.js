@@ -4,7 +4,7 @@ import { posts, goToPage } from "../index.js";
 // import { formatDistanceToNow } from "/date-fns"
 // import { ru } from "/date-fns/locale/ru.js"
 
-export function renderPostsPageComponent({ appEl }) {
+export function renderPostsPageComponent({ appEl, userName }) {
   // @TODO: реализовать рендер постов из api
   console.log("Актуальный список постов:", posts);
 
@@ -13,7 +13,9 @@ export function renderPostsPageComponent({ appEl }) {
    * можно использовать https://date-fns.org/v2.29.3/docs/formatDistanceToNow
    */
 
-  const container = document.getElementById('app')
+  const pageTitle = userName 
+    ? `Посты пользователя ${userName}` 
+    : "Все посты";
 
   const appHtml = posts.map((post, index) => {
     // const postDate = new Date(post.createdAt);
@@ -24,10 +26,9 @@ export function renderPostsPageComponent({ appEl }) {
     //     });
 
 
-    // Нравится: <strong>${post.likes[0].name || `Никому`}
     return `
       <li class="post">
-        <div class="post-header" data-user-id=${post.id}>
+        <div class="post-header" data-user-id="${post.user.id}">
           <img src="${post.user.imageUrl}" class="post-header__user-image" alt="фото профиля пользователя">
           <p class="post-header__user-name">${post.user.name}</p>
         </div>
@@ -35,12 +36,12 @@ export function renderPostsPageComponent({ appEl }) {
           <img src="${post.imageUrl}" class="post-image" alt="фото поста">
         </div>
         <div class="post-likes">
-          <button data-post-id="642d00579b190443860c2f32" class="like-button">
+          <button data-post-id="${post.id}" class="like-button">
             <img src="./assets/images/like-not-active.svg">
           </button>
           <p class="post-likes-text">
-            Нравится: <strong>${`Никому`}
-                ${post.likes.length>1? `и еще ${post.likes.length-1}` : ''} </strong>
+            Нравится: <strong>${post.likes[0]?.name || 'Никому'}
+            ${post.likes.length > 1 ? `и еще ${post.likes.length - 1}` : ''}</strong>
           </p>
         </div>
         <p class="post-text">
@@ -51,18 +52,17 @@ export function renderPostsPageComponent({ appEl }) {
           ${post.createdAt}
         </p>
       </li>
-    `
+    `;
   }).join('');
 
   
   appEl.innerHTML = `
     <div class="page-container">
       <div class="header-container"></div>
+      <h2 class="page-title">${pageTitle}</h2>
       <ul class="posts">${appHtml}</ul>
     </div>
   `;
-  // appEl.innerHTML = appHtml;
-
 
   renderHeaderComponent({
     element: document.querySelector(".header-container"),
