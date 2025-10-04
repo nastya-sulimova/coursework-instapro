@@ -32,6 +32,17 @@
   font-weight: 500;
   cursor: pointer;
 }
+.delete-post-button {
+  margin-top: 3px;
+  padding: 3px;
+  background-color: transparent;
+  font-size: 12px;
+  line-height: 18px;
+  font-weight: 500;
+  cursor: pointer;
+  border: 1px black solid;
+  border-radius: 5px;
+}
 
 .logout-button {
   width: 130px;

@@ -1,7 +1,7 @@
 import { USER_POSTS_PAGE } from "../routes.js";
 import { renderHeaderComponent } from "./header-component.js";
 import { posts, goToPage, user } from "../index.js";
-import { likePost, dislikePost } from "../api.js";
+import { likePost, dislikePost, deletePost } from "../api.js";
 // import { formatDistanceToNow } from "/date-fns"
 // import { ru } from "/date-fns/locale/ru.js"
 
@@ -33,6 +33,7 @@ const postsUserHeader = userName && userData
     //         locale: ru    
     //     });
 
+    const canDeletePost = user && userName !== null && user._id === post.user.id;
 
     return `
       <li class="post">
@@ -65,6 +66,12 @@ const postsUserHeader = userName && userData
         <p class="post-date">
           ${post.createdAt}
         </p>
+  
+         ${canDeletePost ? `
+        <button data-post-delete="${post.id}" class="delete-post-button">
+          Удалить пост
+        </button>
+      ` : ''}
       </li>
     `;
   }).join('');
@@ -139,5 +146,39 @@ const addInitLikesListeners = () => {
 };
 
 addInitLikesListeners();
+
+
+const addInitDeletePostListeners = () => {
+  const deletePostBtn = document.querySelectorAll('.delete-post-button');
+
+  deletePostBtn.forEach((deleteButton) => {
+    deleteButton.addEventListener('click', (event) => {
+      event.stopPropagation();
+      const postId = deleteButton.dataset.postDelete;
+
+      if (!confirm("Вы уверены, что хотите удалить этот пост?")) {
+        return;
+      }
+
+      const token = user ? `Bearer ${user.token}` : undefined;
+
+        deletePost({ token, postId })
+          .then(() => {
+            const postIndex = posts.findIndex(p => p.id === postId);
+            if (postIndex !== -1) {
+              posts.splice(postIndex, 1);
+            }
+
+            renderPostsPageComponent({ appEl, userName });
+          })
+          .catch((error) => {
+            console.error("Ошибка при удалении поста:", error);
+            alert("Не удалось удалить пост: " + error.message);
+          });
+    });
+  });
+};
+
+addInitDeletePostListeners();
 
 }
