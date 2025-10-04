@@ -17,6 +17,11 @@
   font-size: 28px;
   cursor: pointer;
   width: 130px;
+  transform: scale(1);
+  transition: transform 0.5s;
+}
+.logo:hover {
+  transform: scale(1.1);
 }
 
 .header-container {
@@ -31,7 +36,14 @@
   line-height: 18px;
   font-weight: 500;
   cursor: pointer;
+  transform: scale(1);
+  transition: transform 0.5s;
 }
+
+.header-button:hover {
+  transform: scale(1.1);
+}
+
 .delete-post-button {
   margin-top: 3px;
   padding: 3px;
