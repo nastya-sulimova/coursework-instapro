@@ -1,6 +1,7 @@
 import { USER_POSTS_PAGE } from "../routes.js";
 import { renderHeaderComponent } from "./header-component.js";
-import { posts, goToPage } from "../index.js";
+import { posts, goToPage, user } from "../index.js";
+import { likePost, dislikePost } from "../api.js";
 // import { formatDistanceToNow } from "/date-fns"
 // import { ru } from "/date-fns/locale/ru.js"
 
@@ -48,7 +49,9 @@ const postsUserHeader = userName && userData
         </div>
         <div class="post-likes">
           <button data-post-id="${post.id}" class="like-button">
-            <img src="./assets/images/like-not-active.svg">
+            <img src="${
+              post.isLiked ? './assets/images/like-active.svg' : './assets/images/like-not-active.svg'
+          }">
           </button>
           <p class="post-likes-text">
             Нравится: <strong>${post.likes[0]?.name || 'Никому'}
@@ -86,4 +89,55 @@ const postsUserHeader = userName && userData
       });
     });
   }
+
+
+const addInitLikesListeners = () => {
+  const likeButtonsEl = document.querySelectorAll('.like-button');
+
+  likeButtonsEl.forEach((likeButton) => {
+    likeButton.addEventListener('click', (event) => {
+      event.stopPropagation();
+      const postId = likeButton.dataset.postId;
+      
+      if (!user) {
+        alert("Нужно авторизоваться, чтобы ставить лайки!");
+        return;
+      }
+
+      const post = posts.find(p => p.id === postId);
+      if (!post) return;
+
+      const token = user ? `Bearer ${user.token}` : undefined;
+
+      if (post.isLiked) {
+        dislikePost({ token, postId })
+          .then((updatedPost) => {
+            const postIndex = posts.findIndex(p => p.id === postId);
+            if (postIndex !== -1) {
+              posts[postIndex] = updatedPost.post;
+            }
+            renderPostsPageComponent({ appEl, userName });
+          })
+          .catch((error) => {
+            console.error("Ошибка при удалении лайка:", error);
+          });
+      } else {
+        likePost({ token, postId })
+          .then((updatedPost) => {
+            const postIndex = posts.findIndex(p => p.id === postId);
+            if (postIndex !== -1) {
+              posts[postIndex] = updatedPost.post;
+            }
+            renderPostsPageComponent({ appEl, userName });
+          })
+          .catch((error) => {
+            console.error("Ошибка при добавлении лайка:", error);
+          });
+      }
+    });
+  });
+};
+
+addInitLikesListeners();
+
 }
