@@ -2,8 +2,6 @@ import { USER_POSTS_PAGE } from "../routes.js";
 import { renderHeaderComponent } from "./header-component.js";
 import { posts, goToPage, user } from "../index.js";
 import { likePost, dislikePost, deletePost } from "../api.js";
-// import { formatDistanceToNow } from "/date-fns"
-// import { ru } from "/date-fns/locale/ru.js"
 
 export function renderPostsPageComponent({ appEl, userName }) {
   // @TODO: реализовать рендер постов из api
@@ -26,12 +24,12 @@ const postsUserHeader = userName && userData
   : "";
 
   const appHtml = posts.map((post, index) => {
-    // const postDate = new Date(post.createdAt);
-        
-    //     const timeAgo = formatDistanceToNow(postDate, { 
-    //         addSuffix: true, 
-    //         locale: ru    
-    //     });
+
+    const postDate = new Date(post.createdAt);
+      const timeAgo = window.dateFns.formatDistanceToNow(postDate, { 
+      addSuffix: true, 
+      locale: window.ruLocale.ru     
+    });
 
     const canDeletePost = user && userName !== null && user._id === post.user.id;
 
@@ -64,7 +62,7 @@ const postsUserHeader = userName && userData
           ${post.description}
         </p>
         <p class="post-date">
-          ${post.createdAt}
+          ${timeAgo}
         </p>
   
          ${canDeletePost ? `
